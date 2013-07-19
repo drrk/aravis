@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="module_aravis" default="compile.module.aravis">
+    <dirname property="module.aravis.basedir" file="${ant.file.module_aravis}"/>
+
+    <property name="module.jdk.home.aravis" value="${project.jdk.home}"/>
+    <property name="module.jdk.bin.aravis" value="${project.jdk.bin}"/>
+    <property name="module.jdk.classpath.aravis" value="${project.jdk.classpath}"/>
+
+    <property name="compiler.args.aravis" value="${compiler.args}"/>
+
+    <property name="aravis.output.dir" value="${module.aravis.basedir}/classes/production/Aravis"/>
+    <property name="aravis.testoutput.dir" value="${module.aravis.basedir}/classes/test/Aravis"/>
+
+    <path id="aravis.module.bootclasspath">
+        <!-- Paths to be included in compilation bootclasspath -->
+    </path>
+
+    <path id="aravis.module.classpath">
+        <path refid="${module.jdk.classpath.aravis}"/>
+        <path refid="library.jdom.classpath"/>
+        <path refid="library.org.eclipse.swt_3.2.1.v3235e.classpath"/>
+        <path refid="library.org.eclipse.swt.carbon.macosx_3.2.1.v3235.classpath"/>
+        <path refid="library.org.eclipse.jface_3.2.1.m20060908-1000.classpath"/>
+        <path refid="library.org.eclipse.core.runtime_3.2.0.v20060603.classpath"/>
+        <path refid="library.org.eclipse.core.commands_3.2.0.i20060605-1400.classpath"/>
+        <path refid="library.org.eclipse.core.runtime.compatibility_3.1.100.v20060603.classpath"/>
+        <path refid="library.org.eclipse.equinox.common_3.2.0.v20060603.classpath"/>
+    </path>
+
+
+    <patternset id="excluded.from.module.aravis">
+        <patternset refid="ignored.files"/>
+    </patternset>
+
+    <patternset id="excluded.from.compilation.aravis">
+        <patternset refid="excluded.from.module.aravis"/>
+    </patternset>
+
+    <path id="aravis.module.sourcepath">
+        <dirset dir="${module.aravis.basedir}">
+            <include name="src"/>
+        </dirset>
+    </path>
+
+
+    <target name="compile.module.aravis" depends="compile.module.aravis.production,compile.module.aravis.tests"
+            description="Compile module Aravis"/>
+
+    <target name="compile.module.aravis.production" description="Compile module Aravis; production classes">
+        <mkdir dir="${aravis.output.dir}"/>
+        <javac destdir="${aravis.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}"
+               memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.aravis}/javac">
+            <compilerarg line="${compiler.args.aravis}"/>
+            <bootclasspath refid="aravis.module.bootclasspath"/>
+            <classpath refid="aravis.module.classpath"/>
+            <src refid="aravis.module.sourcepath"/>
+            <patternset refid="excluded.from.compilation.aravis"/>
+        </javac>
+
+        <copy todir="${aravis.output.dir}">
+            <fileset dir="${module.aravis.basedir}/src">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.module.aravis.tests" depends="compile.module.aravis.production"
+            description="compile module Aravis; test classes" unless="skip.tests"/>
+
+    <target name="clean.module.aravis" description="cleanup module">
+        <delete dir="${aravis.output.dir}"/>
+        <delete dir="${aravis.testoutput.dir}"/>
+    </target>
+</project>
